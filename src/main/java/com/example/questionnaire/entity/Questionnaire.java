@@ -36,7 +36,6 @@ public class Questionnaire {
 
 	public Questionnaire() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Questionnaire(String title, String description, boolean published, LocalDate startDate, LocalDate endDate) {
@@ -50,7 +49,6 @@ public class Questionnaire {
 	
 	
 
-
 	public Questionnaire(int id, String title, String description, boolean published, LocalDate startDate,
 			LocalDate endDate) {
 		super();
@@ -61,6 +59,8 @@ public class Questionnaire {
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
+	
+	
 
 	public int getId() {
 		return id;

@@ -11,13 +11,16 @@ import com.example.questionnaire.entity.QuestionId;
 @Repository
 public interface QuestionDao extends JpaRepository<Question,QuestionId>{
 	
-	public void deleteAllByQnId(List<Integer> qnIdList);
+	public void deleteAllByQnIdIn( List<Integer> qnIdList);
 	
-	public void deleteAllByQnIdAndQuIdIn(List<Integer> qnIdList);
+	public void deleteAllByQnIdAndQuIdIn(int qnId, List<Integer>quIdList);
 	
-	public List<Question>findByQnIdIn(List<Integer> idList);
 	
-	public List<Question>findAllByQnIdIn(List<Integer> idList);
+	public List<Question> findByQnIdIn(List<Integer> idList);
+	
+	public List<Question> findAllByQnIdIn(List<Integer> idList);
+	
+	public List<Question> findAllByQnIdAndQuIdIn(int qnId, List<Integer> quIdList);
 	
 	
 }

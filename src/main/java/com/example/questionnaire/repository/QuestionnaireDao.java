@@ -11,10 +11,7 @@ import com.example.questionnaire.entity.Questionnaire;
 
 @Repository
 public interface QuestionnaireDao extends JpaRepository<Questionnaire,Integer>{
-	/**
-	*
-	**/
-	
+
 	public List<Questionnaire> findByIdIn(List<Integer> idList);
 	
 	public List<Questionnaire> findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(String title ,LocalDate startDate, LocalDate endDate);

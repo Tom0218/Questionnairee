@@ -7,27 +7,27 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
-@IdClass(value =QuestionId.class)
+@IdClass(value = QuestionId.class)
 @Table(name = "question")
 public class Question {
-	
+
 	@Id
 	@Column(name = "id")
-	private int quId ;
-	
+	private int quId;
+
 	@Id
 	@Column(name = "qn_id")
 	private int qnId;
-	
+
 	@Column(name = "q_title")
 	private String qTitle;
-	
+
 	@Column(name = "option_type")
 	private String optionType;
-	
+
 	@Column(name = "is_necessary")
 	private boolean necessary;
-	
+
 	@Column(name = "q_option")
 	private String option;
 
@@ -43,8 +43,6 @@ public class Question {
 		this.necessary = necessary;
 		this.option = option;
 	}
-	
-	
 
 	public Question(int quId, int qnId, String qTitle, String optionType, boolean necessary, String option) {
 		super();
@@ -60,74 +58,48 @@ public class Question {
 		return quId;
 	}
 
-
-
 	public void setQuId(int quId) {
 		this.quId = quId;
 	}
-
-
 
 	public int getQnId() {
 		return qnId;
 	}
 
-
-
 	public void setQnId(int qnId) {
 		this.qnId = qnId;
 	}
-
-
 
 	public String getqTitle() {
 		return qTitle;
 	}
 
-
-
 	public void setqTitle(String qTitle) {
 		this.qTitle = qTitle;
 	}
-
-
 
 	public String getOptionType() {
 		return optionType;
 	}
 
-
-
 	public void setOptionType(String optionType) {
 		this.optionType = optionType;
 	}
-
-
 
 	public boolean isNecessary() {
 		return necessary;
 	}
 
-
-
 	public void setNecessary(boolean necessary) {
 		this.necessary = necessary;
 	}
-
-
 
 	public String getOption() {
 		return option;
 	}
 
-
-
 	public void setOption(String option) {
 		this.option = option;
 	}
 
-
-
-	
-	
 }

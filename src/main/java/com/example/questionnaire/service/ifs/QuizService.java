@@ -9,19 +9,20 @@ import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
 
 public interface QuizService {
-	
+
 	public QuizRes create(QuizReq req);
-	
+
 	public QuizRes update(QuizReq req);
-	
+
 	public QuizRes deleteQuestionnaire(List<Integer> qnIdList);
-	
-	public QuizRes deleteQuestion(int qnId ,List<Integer> quIdList);
-	
-	public QuizRes search(String title ,LocalDate startDate, LocalDate endDate);
-	
-	public QuestionnaireRes searchQuestionnaireList(String title ,LocalDate startDate, LocalDate endDate,boolean isPublished);
-	
+
+	public QuizRes deleteQuestion(int qnId, List<Integer> quIdList);
+
+	public QuizRes search(String title, LocalDate startDate, LocalDate endDate);
+
+	public QuestionnaireRes searchQuestionnaireList(String title, LocalDate startDate, LocalDate endDate,
+			boolean isPublished);
+
 	public QuestionRes searchQuestionList(int qnId);
-	
+
 }

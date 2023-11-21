@@ -5,13 +5,16 @@ import java.util.List;
 
 import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuizVo {
 	///一張問卷多個答案，一個QuizVo == 一個問卷
 
-	private Questionnaire questionnaire = new Questionnaire();;
+	
+	private Questionnaire questionnaire = new Questionnaire();//一張問卷
 
-	private List<Question> questionList= new ArrayList<>();
+	@JsonProperty("question_List")
+	private List<Question> questionList= new ArrayList<>();//題目
 
 	public QuizVo() {
 		super();
