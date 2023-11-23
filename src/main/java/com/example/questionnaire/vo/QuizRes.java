@@ -9,6 +9,7 @@ public class QuizRes {
 	
 	private List<QuizVo> quizVoList;	//vo§¹¾ã°Ý¨÷
 	
+	
 	private RtnCode rtncode;
 
 	public QuizRes() {

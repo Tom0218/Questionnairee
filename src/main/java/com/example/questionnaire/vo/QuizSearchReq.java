@@ -9,10 +9,10 @@ public class QuizSearchReq {
 	
 	private String title ;
 	
-	@JsonProperty("start_Date")
+	@JsonProperty("start_date")
 	private LocalDate startDate; 
 	
-	@JsonProperty("end_Date")
+	@JsonProperty("end_date")
 	private LocalDate endDate;
 	
 	public String getTitle() {

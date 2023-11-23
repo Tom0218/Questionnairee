@@ -26,9 +26,7 @@ public class QuizReq extends QuizVo{
 	public void setDeleteQuestionList(List<Question> deleteQuestionList) {
 		this.deleteQuestionList = deleteQuestionList;
 	}
-	
-	
-	
+
 	
 
 	

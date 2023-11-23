@@ -66,14 +66,12 @@ public class QuizServiceTest {
 
 	}
 
-	// 完成
 	@Test
 	public void deleteQuestionnaireTest() {
 		QuizRes res = service.deleteQuestionnaire(Arrays.asList(22));
 		Assert.isTrue(res.getRtncode().getCode() == 200, "delete error!");
 	}
 
-	// 完成
 	@Test
 	public void deleteQuestionTest() {
 		QuizRes res = service.deleteQuestion(41, Arrays.asList(1, 2));

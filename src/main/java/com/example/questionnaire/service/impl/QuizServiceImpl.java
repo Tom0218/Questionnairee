@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -32,8 +33,7 @@ public class QuizServiceImpl implements QuizService {
 	@Autowired
 	private QuestionDao quDao;
 
-	// Transactional跨表儲存時全部失敗或全部成功，不能加在priavte權限
-	@Transactional
+	@Transactional // Transactional跨表儲存時全部失敗或全部成功，不能加在priavte權限
 	@Override
 	public QuizRes create(QuizReq req) {
 		QuizRes checkResult = checkParam(req);
@@ -80,6 +80,12 @@ public class QuizServiceImpl implements QuizService {
 				return new QuizRes(RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
 			}
 		}
+		List<Question> quDelList = req.getDeleteQuestionList();
+		for (Question qu : quDelList) {
+			if (qu.getQnId() != req.getQuestionnaire().getId()) {
+				return new QuizRes(RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
+			}
+		}
 		return null;
 	}
 
@@ -101,8 +107,10 @@ public class QuizServiceImpl implements QuizService {
 		if (qnOp.isEmpty()) {
 			return new QuizRes(RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
 		}
+
+		// 蒐集將被刪除的quId
 		List<Integer> deleteQuIdList = new ArrayList<>();
-		for(Question qu: req.getDeleteQuestionList()) {
+		for (Question qu : req.getDeleteQuestionList()) {
 			deleteQuIdList.add(qu.getQuId());
 		}
 		// 可修改條件!!
@@ -112,7 +120,7 @@ public class QuizServiceImpl implements QuizService {
 		if (!qn.isPublished() || (qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate()))) {
 			qnDao.save(req.getQuestionnaire());
 			quDao.saveAll(req.getQuestionList());
-			if(!deleteQuIdList.isEmpty()) {
+			if (!deleteQuIdList.isEmpty()) {
 				quDao.deleteAllByQnIdAndQuIdIn(qn.getId(), deleteQuIdList);
 			}
 			return new QuizRes(RtnCode.SUCCESSFUL);
@@ -128,7 +136,6 @@ public class QuizServiceImpl implements QuizService {
 		List<Integer> idList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
 			if (!qn.isPublished() || qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate())) {
-				System.out.println(qn.getId());
 				idList.add(qn.getId());
 			}
 		}
@@ -138,7 +145,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
-	
+
 	@Transactional
 	@Override
 	public QuizRes deleteQuestion(int qnId, List<Integer> quIdList) {
@@ -153,20 +160,19 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
 
-	@Transactional
+	@Cacheable(cacheNames = "search",
+			 //key = "#title"_#startDate_#endDate
+			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
+			unless = "#result.rtncode.code !=200")
 	@Override
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
-
-		title = StringUtils.hasText(title) ? title : "";
-		startDate = startDate != null ? startDate : LocalDate.of(1971, 1, 1);
-		endDate = endDate != null ? endDate : LocalDate.of(2099, 12, 31);
+		System.out.println("========");
 		List<Questionnaire> qnList = qnDao
 				.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(title, startDate, endDate);
 		List<Integer> qnIds = new ArrayList<>();
 		for (Questionnaire qu : qnList) { // 取出符合條件的qnid
 			qnIds.add(qu.getId());
 		}
-
 		List<Question> quList = quDao.findAllByQnIdIn(qnIds); // 找出所有符合條件的qnid的問題
 		List<QuizVo> quizVoList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
@@ -182,7 +188,6 @@ public class QuizServiceImpl implements QuizService {
 			vo.setQuestionList(questionList);
 			quizVoList.add(vo);
 		}
-		System.out.println(quizVoList);
 		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
 
 	}

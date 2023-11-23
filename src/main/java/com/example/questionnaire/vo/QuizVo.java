@@ -8,12 +8,11 @@ import com.example.questionnaire.entity.Questionnaire;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuizVo {
-	///一張問卷多個答案，一個QuizVo == 一個問卷
-
 	
+	///一張問卷多個答案，一個QuizVo == 一個問卷
 	private Questionnaire questionnaire = new Questionnaire();//一張問卷
 
-	@JsonProperty("question_List")
+	@JsonProperty("question_list")
 	private List<Question> questionList= new ArrayList<>();//題目
 
 	public QuizVo() {
