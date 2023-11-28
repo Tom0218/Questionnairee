@@ -52,10 +52,11 @@ public class QuizController {
 			@RequestParam(value = "start_date",required = false)@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)LocalDate startDate,
 			@RequestParam(value = "end_date",required = false)@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)LocalDate endDate
 			) {
-		 title= StringUtils.hasText(title) ? title:"";
+		 title = StringUtils.hasText(title) ? title:"";
 		 startDate = startDate != null ? startDate : LocalDate.of(1971, 1, 1);
 		 endDate = endDate!= null ? endDate : LocalDate.of(2099, 12, 31);
 		return service.search(title, startDate, endDate);
+		
 		//return service.search(req.getTitle(), req.getStartDate(), req.getEndDate());
 	}
 	

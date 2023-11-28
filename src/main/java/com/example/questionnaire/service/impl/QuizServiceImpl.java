@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,6 @@ import com.example.questionnaire.entity.Questionnaire;
 import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
-import com.example.questionnaire.vo.QnQuVo;
 import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
@@ -132,6 +132,7 @@ public class QuizServiceImpl implements QuizService {
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "deleteQuestionnaire", allEntries = true)
 	public QuizRes deleteQuestionnaire(List<Integer> qnIdList) {
 		System.out.println("deleqn");
 		List<Questionnaire> qnList = qnDao.findByIdIn(qnIdList);
@@ -167,6 +168,7 @@ public class QuizServiceImpl implements QuizService {
 			 //key = "#title"_#startDate_#endDate
 			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
 			unless = "#result.rtncode.code !=200")
+	@CacheEvict(cacheNames = "search", allEntries = true)
 	@Override
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
 		List<Questionnaire> qnList = qnDao
