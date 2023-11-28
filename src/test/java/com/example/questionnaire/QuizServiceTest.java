@@ -4,41 +4,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
-import com.example.questionnaire.constants.RtnCode;
 import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
-import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
-import com.example.questionnaire.vo.QuizVo;
 
 @SpringBootTest
 public class QuizServiceTest {
 
 	@Autowired
 	private QuizService service;
+	 @Autowired
+	 private QuestionnaireDao qnDao;
 
-	@Autowired
-	private QuestionnaireDao qnDao;
-
-	@Autowired
-	private QuestionDao quDao;
-
-	// 完成
 	@Test
 	public void creatTest() {
-		Questionnaire questionnaire = new Questionnaire("title2", "testdescript", false, LocalDate.of(2023, 12, 12),
-				LocalDate.of(2023, 12, 22));
+		Questionnaire questionnaire = new Questionnaire("trthrh", "testdescript", false, LocalDate.of(2023, 11, 26), LocalDate.of(2024, 12, 01));
 
 		List<Question> questionList = new ArrayList<>();
 		Question q1 = new Question(1, "test1_question_1", "single", false, "AAA;BBB;CCC");
@@ -52,7 +42,6 @@ public class QuizServiceTest {
 		Assert.isTrue(res.getRtncode().getCode() == 200, "create error!");
 	}
 
-	// 完成
 	@Test
 	public void updateTest() {
 		Questionnaire questionnaire = new Questionnaire(41, "test1Title", "testdescript", false,
@@ -79,21 +68,41 @@ public class QuizServiceTest {
 
 	}
 
-	// 完成
 	@Test
 	public void searchTest() {
-		QuizRes res = service.search(null, LocalDate.of(2023, 11, 24), LocalDate.of(2024, 1, 10));
+		QuizRes res = service.search("D", LocalDate.of(2023, 12, 10), LocalDate.of(2023, 12, 29));
 		Assert.isTrue(res.getRtncode().getCode() == 200, "upatet error!");
 	}
 
 	@Test
 	public void searchQuestionnaireList() {
 		QuestionnaireRes res = service.searchQuestionnaireList(null, null, null, false);
+		System.out.println(res);
+	}
+	@Test
+	public void insert() {
+		int res = qnDao.insertData("qa_02", "qa_02 test", false, LocalDate.of(2023, 11, 26), LocalDate.of(2024, 12, 01));
+		System.out.println(res);
 	}
 
 	@Test
-	public void Test() {
-
+	public void insertTest() {
+		int res = qnDao.insertData("qa_02", "qa_02 test", false, LocalDate.of(2023, 11, 24), LocalDate.of(2024, 01, 24));
+		System.out.println(res);
+	}
+	
+	@Test
+	public void upDateTest() {
+		int res = qnDao.updateData(52, "qn_007", "qn_007_test");
+		System.out.println(res);
+	}
+	
+	@Test
+	public void limitTest() {
+		 List<Questionnaire> res = qnDao.findWithLimitAndStartPosition(1, 3);
+		 res.forEach(item -> {
+			 System.out.println(item.getId());
+		 });
 	}
 
 }

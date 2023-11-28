@@ -18,6 +18,7 @@ import com.example.questionnaire.entity.Questionnaire;
 import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
+import com.example.questionnaire.vo.QnQuVo;
 import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
@@ -132,6 +133,7 @@ public class QuizServiceImpl implements QuizService {
 	@Transactional
 	@Override
 	public QuizRes deleteQuestionnaire(List<Integer> qnIdList) {
+		System.out.println("deleqn");
 		List<Questionnaire> qnList = qnDao.findByIdIn(qnIdList);
 		List<Integer> idList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
@@ -160,23 +162,24 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
 
+	@Transactional
 	@Cacheable(cacheNames = "search",
 			 //key = "#title"_#startDate_#endDate
 			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
 			unless = "#result.rtncode.code !=200")
 	@Override
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
-		System.out.println("========");
 		List<Questionnaire> qnList = qnDao
 				.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(title, startDate, endDate);
 		List<Integer> qnIds = new ArrayList<>();
-		for (Questionnaire qu : qnList) { // 取出符合條件的qnid
+		for (Questionnaire qu : qnList) {
+			System.out.print(qu.getId());// 取出符合條件的qnid
 			qnIds.add(qu.getId());
 		}
 		List<Question> quList = quDao.findAllByQnIdIn(qnIds); // 找出所有符合條件的qnid的問題
 		List<QuizVo> quizVoList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
-			QuizVo vo = new QuizVo();// 兼立一個問卷
+			QuizVo vo = new QuizVo();// 建立一個問卷
 			vo.setQuestionnaire(qn);// 把符合條件的一個問卷set進Questionnaire
 
 			List<Question> questionList = new ArrayList<>();// 建立放問題的list。
@@ -188,11 +191,15 @@ public class QuizServiceImpl implements QuizService {
 			vo.setQuestionList(questionList);
 			quizVoList.add(vo);
 		}
+				
 		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
+	
 
 	}
 
-	@Transactional
+	@Cacheable(cacheNames = "searchQuestionnaireList",
+			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
+			unless = "#result.rtncode.code !=200")
 	@Override
 	public QuestionnaireRes searchQuestionnaireList(String title, LocalDate startDate, LocalDate endDate,
 			boolean isAll) {
@@ -218,5 +225,11 @@ public class QuizServiceImpl implements QuizService {
 		List<Question> quList = quDao.findAllByQnIdIn(Arrays.asList(qnId));
 		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
 	}
+	
+//	@Override 
+//	QuizRes searchFuzzy(String title, LocalDate startDate, LocalDate endDate);
+//	List<QnQuVo> res = null;
+//	return new QuizRes(null, res, RtnCode.SUCCESSFUL);
+//	
 
 }
