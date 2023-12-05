@@ -8,16 +8,18 @@ import com.example.questionnaire.entity.Questionnaire;
 
 public class QuizReq extends QuizVo{
 	
+	//for update
 	private List<Question> deleteQuestionList = new ArrayList<>();
 
 	public QuizReq() {
 		super();
-	
 	}
 
 	public QuizReq(Questionnaire questionnaire, List<Question> questionList) {
 		super(questionnaire, questionList);
 	}
+	
+	
 
 	public List<Question> getDeleteQuestionList() {
 		return deleteQuestionList;

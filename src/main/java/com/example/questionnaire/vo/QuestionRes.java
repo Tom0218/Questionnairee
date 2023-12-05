@@ -10,6 +10,7 @@ public class QuestionRes {
 	private RtnCode rtncode;
 	
 	private List<Question> questionList;
+	
 
 	public QuestionRes() {
 		super();

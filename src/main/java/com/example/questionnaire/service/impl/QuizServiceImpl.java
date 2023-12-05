@@ -1,6 +1,7 @@
 package com.example.questionnaire.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -16,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.example.questionnaire.constants.RtnCode;
 import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
+import com.example.questionnaire.entity.User;
 import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
@@ -25,6 +29,7 @@ import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
 import com.example.questionnaire.vo.QuizVo;
 
+@EnableScheduling
 @Service
 public class QuizServiceImpl implements QuizService {
 
@@ -92,6 +97,7 @@ public class QuizServiceImpl implements QuizService {
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "update", allEntries = true)
 	public QuizRes update(QuizReq req) {
 
 		QuizRes checkResult = checkParam(req);
@@ -134,7 +140,6 @@ public class QuizServiceImpl implements QuizService {
 	@Override
 	@CacheEvict(cacheNames = "deleteQuestionnaire", allEntries = true)
 	public QuizRes deleteQuestionnaire(List<Integer> qnIdList) {
-		System.out.println("deleqn");
 		List<Questionnaire> qnList = qnDao.findByIdIn(qnIdList);
 		List<Integer> idList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
@@ -151,6 +156,7 @@ public class QuizServiceImpl implements QuizService {
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "deleteQuestion", allEntries = true)
 	public QuizRes deleteQuestion(int qnId, List<Integer> quIdList) {
 		Optional<Questionnaire> qnOp = qnDao.findById(qnId);
 		if (qnOp.isEmpty()) {
@@ -165,9 +171,8 @@ public class QuizServiceImpl implements QuizService {
 
 	@Transactional
 	@Cacheable(cacheNames = "search",
-			 //key = "#title"_#startDate_#endDate
-			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
-			unless = "#result.rtncode.code !=200")
+			// key = "#title"_#startDate_#endDate
+			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())", unless = "#result.rtncode.code !=200")
 	@CacheEvict(cacheNames = "search", allEntries = true)
 	@Override
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
@@ -175,7 +180,7 @@ public class QuizServiceImpl implements QuizService {
 				.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(title, startDate, endDate);
 		List<Integer> qnIds = new ArrayList<>();
 		for (Questionnaire qu : qnList) {
-			System.out.print(qu.getId());// 取出符合條件的qnid
+//			System.out.print(qu.getId());// 取出符合條件的qnid
 			qnIds.add(qu.getId());
 		}
 		List<Question> quList = quDao.findAllByQnIdIn(qnIds); // 找出所有符合條件的qnid的問題
@@ -193,15 +198,12 @@ public class QuizServiceImpl implements QuizService {
 			vo.setQuestionList(questionList);
 			quizVoList.add(vo);
 		}
-				
-		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
-	
 
+		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
 	}
 
-	@Cacheable(cacheNames = "searchQuestionnaireList",
-			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
-			unless = "#result.rtncode.code !=200")
+	@Cacheable(cacheNames = "searchQuestionnaireList", key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())", unless = "#result.rtncode.code !=200")
+	@CacheEvict(cacheNames = "searchQuestionnaireList", allEntries = true)
 	@Override
 	public QuestionnaireRes searchQuestionnaireList(String title, LocalDate startDate, LocalDate endDate,
 			boolean isAll) {
@@ -219,19 +221,57 @@ public class QuizServiceImpl implements QuizService {
 		return new QuestionnaireRes(qnList, RtnCode.SUCCESSFUL);
 	}
 
+	@Cacheable(cacheNames = "searchQuestionList")
+	@CacheEvict(cacheNames = "searchQuestionList", allEntries = true)
 	@Override
 	public QuestionRes searchQuestionList(int qnId) {
+//		System.out.println("in");
 		if (qnId <= 0) {
 			return new QuestionRes(null, RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
 		}
 		List<Question> quList = quDao.findAllByQnIdIn(Arrays.asList(qnId));
 		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
 	}
+
+	@Override
+	public QuizRes setInfoAndAnswer(User user) {
+		if (StringUtils.hasText(user.getName()) || StringUtils.hasText(user.getPhoneNumber())
+				|| StringUtils.hasText(user.getEmail()) || user.getAge() < 0 || // Additional check for age
+				user.getQnId() > 0 || user.getqId() > 0 || StringUtils.hasText(user.getAnswer())
+				|| user.getDateTime() != null) {
+			System.out.println("name" + user.getName());
+			System.out.println(user.getPhoneNumber());
+			System.out.println(user.getAge());
+			System.out.println(user.getEmail());
+
+			return new QuizRes(RtnCode.SUCCESSFUL);
+		}
+		System.out.println("name" + user.getName());
+		System.out.println("phone" + user.getPhoneNumber());
+		System.out.println("age" + user.getAge());
+		System.out.println("email" + user.getEmail());
+		return new QuizRes(RtnCode.UPDATE_ERROR);
+	}
+
+//	( 秒 分 時 日 月 周 )
+	@Scheduled(cron = "0 * 14 * * *")
+	public void schedule() {
+		System.out.println(LocalDateTime.now());
+	}
 	
+
+//	public void upadateQnStatue() {
+//		LocalDate today = LocalDate.now();
+//		int res = qnDao.updateQnStatus(today);
+//		System.out.print(today);
+//		System.out.print(res);
+//	}
+
 //	@Override 
-//	QuizRes searchFuzzy(String title, LocalDate startDate, LocalDate endDate);
-//	List<QnQuVo> res = null;
-//	return new QuizRes(null, res, RtnCode.SUCCESSFUL);
-//	
+//	QuizRes searchFuzzy(String title, LocalDate startDate, LocalDate endDate) {
+//		List<QnQuVo> res = qnDao.
+//				return new QuizRes(null, res, RtnCode.SUCCESSFUL);
+//	}
+	
 
 }

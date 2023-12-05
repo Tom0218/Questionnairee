@@ -1,5 +1,7 @@
 package com.example.questionnaire.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -31,8 +33,11 @@ public class User {
 	@Column(name = "q_id")
 	private int qId;
 	
-	@Column(name = "answer")
+	@Column(name = "ans")
 	private String answer;
+	
+	@Column(name = "date_time")
+	private LocalDate dateTime;
 	
 
 	public User() {
@@ -40,7 +45,8 @@ public class User {
 
 	}
 
-	public User(String name, String phoneNumber, String email, int age, int qnId, int qId, String answer) {
+	public User(String name, String phoneNumber, String email, int age, int qnId, int qId, String answer,
+			LocalDate dateTime) {
 		super();
 		this.name = name;
 		this.phoneNumber = phoneNumber;
@@ -49,6 +55,7 @@ public class User {
 		this.qnId = qnId;
 		this.qId = qId;
 		this.answer = answer;
+		this.dateTime = dateTime;
 	}
 
 	public String getName() {
@@ -106,6 +113,18 @@ public class User {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+
+	public LocalDate getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(LocalDate dateTime) {
+		this.dateTime = dateTime;
+	}
+
+
+
+	
 	
 	
 }

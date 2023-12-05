@@ -86,11 +86,14 @@ public interface QuestionnaireDao extends JpaRepository<Questionnaire,Integer>{
 			"where title like regexp:title%", nativeQuery = true)
 	public List<Questionnaire> searchTitleLike2(@Param("title")String title);
 
-//regexp or
+	//regexp or
 	@Query(value = "select * from questionnaire "+
 			" where  description regexp:keyword1|:keyword2 ", nativeQuery = true)
 	public List<Questionnaire> searchDescriptionContaining (
 			@Param("keyword1")String keyword1,//
 			@Param("keyword2")String keyword2);
+	
+//	@Query(value="update Questionnaire set published = true where*selcet")
+//	public int updateQnStatus(@Param("today")LocalDate today);
 }
 

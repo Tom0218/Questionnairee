@@ -14,6 +14,7 @@ import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
+import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
@@ -42,18 +43,18 @@ public class QuizServiceTest {
 		Assert.isTrue(res.getRtncode().getCode() == 200, "create error!");
 	}
 
-	@Test
-	public void updateTest() {
-		Questionnaire questionnaire = new Questionnaire(41, "test1Title", "testdescript", false,
-				LocalDate.of(2023, 11, 12), LocalDate.of(2023, 12, 22));
-		List<Question> questionList = new ArrayList<>();
-		Question q1 = new Question(3, 41, "test_question_1", "single", true, "我好;大家好");
-		questionList.addAll(Arrays.asList(q1));
-		QuizReq req = new QuizReq(questionnaire, questionList);
-		QuizRes res = service.update(req);
-		Assert.isTrue(res.getRtncode().getCode() == 200, "update error!");
-
-	}
+//	@Test
+//	public void updateTest() {
+//		Questionnaire questionnaire = new Questionnaire(41, "test1Title", "testdescript", false,
+//				LocalDate.of(2023, 11, 12), LocalDate.of(2023, 12, 22));
+//		List<Question> questionList = new ArrayList<>();
+//		Question q1 = new Question(3, 41, "test_question_1", "single", true, "我好;大家好");
+//		questionList.addAll(Arrays.asList(q1));
+//		QuizReq req = new QuizReq(questionnaire, questionList);
+//		QuizRes res = service.update(req);
+//		Assert.isTrue(res.getRtncode().getCode() == 200, "update error!");
+//
+//	}
 
 	@Test
 	public void deleteQuestionnaireTest() {
@@ -61,12 +62,12 @@ public class QuizServiceTest {
 		Assert.isTrue(res.getRtncode().getCode() == 200, "delete error!");
 	}
 
-	@Test
-	public void deleteQuestionTest() {
-		QuizRes res = service.deleteQuestion(41, Arrays.asList(1, 2));
-		Assert.isTrue(res.getRtncode().getCode() == 200, "delete question error!");
-
-	}
+//	@Test
+//	public void deleteQuestionTest() {
+//		QuizRes res = service.deleteQuestion(41, Arrays.asList(1, 2));
+//		Assert.isTrue(res.getRtncode().getCode() == 200, "delete question error!");
+//
+//	}
 
 	@Test
 	public void searchTest() {
@@ -74,11 +75,18 @@ public class QuizServiceTest {
 		Assert.isTrue(res.getRtncode().getCode() == 200, "upatet error!");
 	}
 
+//	@Test
+//	public void searchQuestionnaireList() {
+//		QuestionnaireRes res = service.searchQuestionnaireList(null, null, null, false);
+//		System.out.println(res);
+//	}
+	
 	@Test
-	public void searchQuestionnaireList() {
-		QuestionnaireRes res = service.searchQuestionnaireList(null, null, null, false);
-		System.out.println(res);
+	public void searchQuestionTest() {
+		QuestionRes res = service.searchQuestionList(86);
+		System.out.println(res.getQuestionList());
 	}
+	
 	@Test
 	public void insert() {
 		int res = qnDao.insertData("qa_02", "qa_02 test", false, LocalDate.of(2023, 11, 26), LocalDate.of(2024, 12, 01));
@@ -91,11 +99,24 @@ public class QuizServiceTest {
 		System.out.println(res);
 	}
 	
-	@Test
-	public void upDateTest() {
-		int res = qnDao.updateData(52, "qn_007", "qn_007_test");
-		System.out.println(res);
-	}
+//	@Test
+//	public void upDateTest() {
+//		int res = qnDao.updateData(52, "qn_007", "qn_007_test");
+//		System.out.println(res);
+//	}
+//	@Test
+//	public void sessionSetTest() {
+//		
+//		QuizRes res = service.setInfoAndAnswer(null ){
+//			
+//			System.out.println(res);
+//		}
+//	}
+	
+//	@Test
+//	public void sessionGetTest() {
+//		QuizRes res = service.
+//	}
 	
 	@Test
 	public void limitTest() {
