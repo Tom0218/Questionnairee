@@ -1,53 +1,52 @@
-package com.example.questionnaire.entity;
+package com.example.questionnaire.vo;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.example.questionnaire.entity.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
-@Table(name = "user")
-public class User {
+public class UserReq extends User {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "num")
-	private int num;
+	@JsonProperty("Submission_List")
+	private List<User> UserSubmissionList = new ArrayList<>();
 
-	@Column(name = "name")
+	@JsonProperty("quId_list")
+	private List<Integer> quIdList = new ArrayList<>();
+
 	private String name;
 
-	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@Column(name = "email")
 	private String email;
 
-	@Column(name = "age")
 	private int age;
 
-	@Column(name = "qn_id")
 	private int qnId;
 
-	@Column(name = "q_id")
 	private int quId;
 
-	@Column(name = "ans")
 	private String answer;
 
-	@Column(name = "date_time")
 	private LocalDateTime dateTime;
 
-	public User() {
+	public UserReq() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public User(String name, String phoneNumber, String email, int age, int qnId, int quId, String answer,
+	public UserReq(int qnId, List<Integer> quIdList) {
+		super();
+		this.quIdList = quIdList;
+		this.qnId = qnId;
+	}
+
+	public UserReq(List<User> userSubmissionList) {
+		super();
+		UserSubmissionList = userSubmissionList;
+	}
+
+	public UserReq(String name, String phoneNumber, String email, int age, int qnId, int quId, String answer,
 			LocalDateTime dateTime) {
 		super();
 		this.name = name;
@@ -100,6 +99,8 @@ public class User {
 		this.qnId = qnId;
 	}
 
+	
+
 	public int getQuId() {
 		return quId;
 	}
@@ -123,5 +124,23 @@ public class User {
 	public void setDateTime(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
 	}
+
+	public List<User> getUserSubmissionList() {
+		return UserSubmissionList;
+	}
+
+	public void setUserSubmissionList(List<User> userSubmissionList) {
+		UserSubmissionList = userSubmissionList;
+	}
+
+	public List<Integer> getQuIdList() {
+		return quIdList;
+	}
+
+	public void setQuIdList(List<Integer> quIdList) {
+		this.quIdList = quIdList;
+	}
+
+
 
 }

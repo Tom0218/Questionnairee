@@ -22,12 +22,15 @@ import com.example.questionnaire.entity.Questionnaire;
 import com.example.questionnaire.entity.User;
 import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
+import com.example.questionnaire.repository.UserDao;
 import com.example.questionnaire.service.ifs.QuizService;
 import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
 import com.example.questionnaire.vo.QuizVo;
+import com.example.questionnaire.vo.UserReq;
+import com.example.questionnaire.vo.UserRes;
 
 @EnableScheduling
 @Service
@@ -39,7 +42,10 @@ public class QuizServiceImpl implements QuizService {
 	@Autowired
 	private QuestionDao quDao;
 
-	@Transactional // Transactional¸óªíÀx¦s®É¥ş³¡¥¢±Ñ©Î¥ş³¡¦¨¥\¡A¤£¯à¥[¦bpriavteÅv­­
+	@Autowired
+	private UserDao userDao;
+
+	@Transactional // Transactionalè·¨è¡¨å„²å­˜æ™‚å…¨éƒ¨å¤±æ•—æˆ–å…¨éƒ¨æˆåŠŸï¼Œä¸èƒ½åŠ åœ¨priavteæ¬Šé™
 	@Override
 	public QuizRes create(QuizReq req) {
 		QuizRes checkResult = checkParam(req);
@@ -48,7 +54,7 @@ public class QuizServiceImpl implements QuizService {
 			return checkResult;
 		}
 		int quId = qnDao.save(req.getQuestionnaire()).getId();
-		// ¥i¥H«Ø¥ß¨S¦³ÃD¥Øªº°İ¨÷
+		// å¯ä»¥å»ºç«‹æ²’æœ‰é¡Œç›®çš„å•å·
 		if (quList.isEmpty()) {
 			return new QuizRes(RtnCode.SUCCESSFUL);
 		}
@@ -59,7 +65,7 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
 
-	// ­q©wÀË¬d°Ñ¼Æ¤èªk¥H´î¤Ö¥Dµ{¦¡createµ{¦¡½X¦æ¼Æ¡C
+	// è¨‚å®šæª¢æŸ¥åƒæ•¸æ–¹æ³•ä»¥æ¸›å°‘ä¸»ç¨‹å¼createç¨‹å¼ç¢¼è¡Œæ•¸ã€‚
 	private QuizRes checkParam(QuizReq req) {
 		Questionnaire qn = req.getQuestionnaire();
 		if (!StringUtils.hasText(qn.getTitle()) || !StringUtils.hasText(qn.getDescription())
@@ -81,7 +87,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		List<Question> quList = req.getQuestionList();
 		for (Question qu : quList) {
-			// §PÂ_Question ¸Ìªºqnid ¦³¨S¦³µ¥©óQuestionniareªºid¥H¨¾¤î°e¿ù§ó·s
+			// åˆ¤æ–·Question è£¡çš„qnid æœ‰æ²’æœ‰ç­‰æ–¼Questionniareçš„idä»¥é˜²æ­¢é€éŒ¯æ›´æ–°
 			if (qu.getQnId() != req.getQuestionnaire().getId()) {
 				return new QuizRes(RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
 			}
@@ -115,14 +121,14 @@ public class QuizServiceImpl implements QuizService {
 			return new QuizRes(RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
 		}
 
-		// »`¶°±N³Q§R°£ªºquId
+		// è’é›†å°‡è¢«åˆªé™¤çš„quId
 		List<Integer> deleteQuIdList = new ArrayList<>();
 		for (Question qu : req.getDeleteQuestionList()) {
 			deleteQuIdList.add(qu.getQuId());
 		}
-		// ¥i­×§ï±ø¥ó!!
-		// 1.©|¥¼µo¥¬:is_published = false¡A¥i¥H­×§ï
-		// 2.¤wµo¥¬¦ı©|¥¼¶}©l¶i¦æis_published = true + ·í«e®É¶¡¥²¶·¤p©óstart_date
+		// å¯ä¿®æ”¹æ¢ä»¶!!
+		// 1.å°šæœªç™¼å¸ƒ:is_published = falseï¼Œå¯ä»¥ä¿®æ”¹
+		// 2.å·²ç™¼å¸ƒä½†å°šæœªé–‹å§‹é€²è¡Œis_published = true + ç•¶å‰æ™‚é–“å¿…é ˆå°æ–¼start_date
 		Questionnaire qn = qnOp.get();
 		if (!qn.isPublished() || (qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate()))) {
 			qnDao.save(req.getQuestionnaire());
@@ -133,7 +139,7 @@ public class QuizServiceImpl implements QuizService {
 			return new QuizRes(RtnCode.SUCCESSFUL);
 		}
 		return new QuizRes(RtnCode.UPDATE_ERROR);
-		// §PÂ_Id¬O§_¦s¦b§_«h­Yid¤£¦s¦b«h·|·s¼W¦Ó¤£¬O­×§ï
+		// åˆ¤æ–·Idæ˜¯å¦å­˜åœ¨å¦å‰‡è‹¥idä¸å­˜åœ¨å‰‡æœƒæ–°å¢è€Œä¸æ˜¯ä¿®æ”¹
 	}
 
 	@Transactional
@@ -149,7 +155,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		if (!idList.isEmpty()) {
 			qnDao.deleteAllById(idList);
-			quDao.deleteAllByQnIdIn(idList);// §R°İ¨÷¸ÌªºÃD¥Ø
+			quDao.deleteAllByQnIdIn(idList);// åˆªå•å·è£¡çš„é¡Œç›®
 		}
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
@@ -180,16 +186,16 @@ public class QuizServiceImpl implements QuizService {
 				.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(title, startDate, endDate);
 		List<Integer> qnIds = new ArrayList<>();
 		for (Questionnaire qu : qnList) {
-//			System.out.print(qu.getId());// ¨ú¥X²Å¦X±ø¥óªºqnid
+//			System.out.print(qu.getId());// å–å‡ºç¬¦åˆæ¢ä»¶çš„qnid
 			qnIds.add(qu.getId());
 		}
-		List<Question> quList = quDao.findAllByQnIdIn(qnIds); // §ä¥X©Ò¦³²Å¦X±ø¥óªºqnidªº°İÃD
+		List<Question> quList = quDao.findAllByQnIdIn(qnIds); // æ‰¾å‡ºæ‰€æœ‰ç¬¦åˆæ¢ä»¶çš„qnidçš„å•é¡Œ
 		List<QuizVo> quizVoList = new ArrayList<>();
 		for (Questionnaire qn : qnList) {
-			QuizVo vo = new QuizVo();// «Ø¥ß¤@­Ó°İ¨÷
-			vo.setQuestionnaire(qn);// §â²Å¦X±ø¥óªº¤@­Ó°İ¨÷set¶iQuestionnaire
+			QuizVo vo = new QuizVo();// å»ºç«‹ä¸€å€‹å•å·
+			vo.setQuestionnaire(qn);// æŠŠç¬¦åˆæ¢ä»¶çš„ä¸€å€‹å•å·seté€²Questionnaire
 
-			List<Question> questionList = new ArrayList<>();// «Ø¥ß©ñ°İÃDªºlist¡C
+			List<Question> questionList = new ArrayList<>();// å»ºç«‹æ”¾å•é¡Œçš„listã€‚
 			for (Question qu : quList) {
 				if (qu.getQnId() == qn.getId()) {
 					questionList.add(qu);
@@ -201,6 +207,13 @@ public class QuizServiceImpl implements QuizService {
 
 		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
 	}
+	
+	@Override
+	public QuestionnaireRes searchQuestionnaire(int qnId) {
+		return null;
+	
+	}
+	
 
 	@Cacheable(cacheNames = "searchQuestionnaireList", key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())", unless = "#result.rtncode.code !=200")
 	@CacheEvict(cacheNames = "searchQuestionnaireList", allEntries = true)
@@ -237,7 +250,7 @@ public class QuizServiceImpl implements QuizService {
 	public QuizRes setInfoAndAnswer(User user) {
 		if (StringUtils.hasText(user.getName()) || StringUtils.hasText(user.getPhoneNumber())
 				|| StringUtils.hasText(user.getEmail()) || user.getAge() < 0 || // Additional check for age
-				user.getQnId() > 0 || user.getqId() > 0 || StringUtils.hasText(user.getAnswer())
+				user.getQnId() > 0 || user.getQuId() > 0 || StringUtils.hasText(user.getAnswer())
 				|| user.getDateTime() != null) {
 			System.out.println("name" + user.getName());
 			System.out.println(user.getPhoneNumber());
@@ -253,13 +266,64 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.UPDATE_ERROR);
 	}
 
-//	( ¬í ¤À ®É ¤é ¤ë ©P )
-	@Scheduled(cron = "0 * 14 * * *")
-	public void schedule() {
-		System.out.println(LocalDateTime.now());
+//	( ç§’ åˆ† æ™‚ æ—¥ æœˆ å‘¨ )
+//	@Scheduled(cron = "0 * 14 * * *")
+//	public void schedule() {
+//		System.out.println(LocalDateTime.now());
+//	}
+
+	@Transactional
+	@Override
+	public UserRes QuestionnaireSubmission(UserReq req) {
+		List<User> userSubmissionList = req.getUserSubmissionList();
+		System.out.println(userSubmissionList);
+		if (userSubmissionList.isEmpty()) {
+			return new UserRes(RtnCode.CAN_NOT_BE_EMPTY);
+		}
+		userDao.saveAll(userSubmissionList);
+		return new UserRes(RtnCode.SUCCESSFUL);
 	}
+
+	@Transactional
+	@Override
+	public UserRes Submission(UserReq req) {
+		List<User> SubminList = req.getUserSubmissionList();
+		userDao.saveAll(SubminList);
+		return new UserRes(RtnCode.SUCCESSFUL);
+
+	}
+
+	@Transactional
+	@CacheEvict(cacheNames = "getSubmission", allEntries = true)
+	@Override
+	public UserRes getSubmission(int qnId) {
+		if (qnId < 0) {
+			return new UserRes(RtnCode.QUESTION_PARAM_ERROR);
+		}
+
+		List<User> List = userDao.findAllByQnId(qnId);
+		if (List.isEmpty()) {
+			return new UserRes(RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
+		}
+		return new UserRes(RtnCode.SUCCESSFUL,List);
+	}
+
 	
 
+//	@Cacheable(cacheNames = "searchQuestionList")
+//	@CacheEvict(cacheNames = "searchQuestionList", allEntries = true)
+//	@Override
+//	public QuestionRes searchQuestionList(int qnId) {
+////		System.out.println("in");
+//		if (qnId <= 0) {
+//			return new QuestionRes(null, RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
+//		}
+//		List<Question> quList = quDao.findAllByQnIdIn(Arrays.asList(qnId));
+//		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
+//	}
+//	
+	
+	
 //	public void upadateQnStatue() {
 //		LocalDate today = LocalDate.now();
 //		int res = qnDao.updateQnStatus(today);
@@ -272,6 +336,5 @@ public class QuizServiceImpl implements QuizService {
 //		List<QnQuVo> res = qnDao.
 //				return new QuizRes(null, res, RtnCode.SUCCESSFUL);
 //	}
-	
 
 }

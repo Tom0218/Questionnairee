@@ -1,10 +1,10 @@
 package com.example.questionnaire.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
+import org.hibernate.service.spi.ServiceBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
@@ -23,11 +23,13 @@ import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizDeleteQuesionnaireReq;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
+import com.example.questionnaire.vo.UserReq;
+import com.example.questionnaire.vo.UserRes;
 
-//RestController ´ÿ∫c¶®Restful API ≠n•[
+//RestController Âª∫ÊßãÊàêRestful API Ë¶ÅÂä†
 
 @RestController
-@CrossOrigin // ¶Í´e∫›
+@CrossOrigin // ‰∏≤ÂâçÁ´Ø
 public class QuizController {
 
 	@Autowired
@@ -86,71 +88,32 @@ public class QuizController {
 		endDate = endDate != null ? endDate : LocalDate.of(2099, 12, 31);
 		return service.searchQuestionnaireList(title, startDate, endDate, false);
 	}
+	
+	@GetMapping(value = "api/quiz/searchQuestionnaire")
+	public QuestionnaireRes searchQuestionnaire(@RequestParam int qnId) {
+		return service.searchQuestionnaire(qnId);
+	}
 
 	@GetMapping(value = "api/quiz/searchQuestionList")
 	public QuestionRes searchQuestionList(@RequestParam int qnId) {
 		return service.searchQuestionList(qnId);
 	}
-
-	@PostMapping(value = "api/quiz/setAnswer")
-	public QuizRes setAnswer(@RequestBody User user, HttpSession session) {
-		QuizRes res = service.setInfoAndAnswer(user);
-		if (res.getRtncode().getCode() == 200) {
-			session.setAttribute("name", user.getName());
-			session.setAttribute("age", user.getAge());
-			session.setAttribute("email", user.getEmail());
-			session.setAttribute("phone", user.getPhoneNumber());
-			session.setAttribute("quId", user.getqId());
-			session.setAttribute("qnId", user.getQnId());
-			session.setAttribute("answer", user.getAnswer());
-			session.setAttribute("dateTime", user.getDateTime());
-			return new QuizRes(res.getInfo(), RtnCode.SUCCESSFUL);
-		}
-		return new QuizRes(res.getInfo(), RtnCode.QUESTIONNAIRE_PARAM_ERROR);
-	}
-
-	@PostMapping(value = "api/quiz/dropAnswer")
-	public QuizRes dropAnswer(@RequestBody User user, HttpSession session) {
-		session.invalidate();
-		return new QuizRes(RtnCode.SUCCESSFUL);
-	}
-
-	@GetMapping(value = "api/quiz/getAnswer")
-	public QuizRes getAnswer(@RequestBody User user, HttpSession session) {
 	
-		  	String name = (String) session.getAttribute("name");
-		    String email = (String) session.getAttribute("email");
-		    String phone = (String) session.getAttribute("phone");
-		    Integer age = (Integer) session.getAttribute("age");
-		    Integer quId = (Integer) session.getAttribute("quId");
-		    Integer qnId = (Integer) session.getAttribute("qnId");
-		    String answer = (String) session.getAttribute("answer");
-//		    String dateTime = (String) session.getAttribute("dateTime");
-
-		    System.out.println("Name: " + name);
-		    System.out.println("Email: " + email);
-		    System.out.println("Phone: " + phone);
-		    System.out.println("Age: " + age);
-		    System.out.println("QuId: " + quId);
-		    System.out.println("QnId: " + qnId);
-		    System.out.println("Answer: " + answer);
-//		    System.out.println("DateTime: " + dateTime);
-//		if (nameObj != null && emailObj != null && phoneObj != null && ageObj != null && quIdObj != null
-//				&& qnIdObj != null && answerObj != null && dateTimeObj != null) {
-//			String name = nameObj.toString();
-//			String email = emailObj.toString();
-//			String phone = phoneObj.toString();
-//			int age = (Integer) ageObj;
-//			int quId = (Integer) quIdObj;
-//			int qnId = (Integer) qnIdObj;
-//			String answer = answerObj.toString();
-//			String dateString = dateTimeObj.toString();
-//			LocalDate dateTime = LocalDate.parse(dateString);
-//
-//			return new QuizRes(null, RtnCode.SUCCESSFUL);
-//		}
-//		return new QuizRes(null, RtnCode.QUESTIONNAIRE_ID_PARAM_ERROR);
-		return new QuizRes(RtnCode.SUCCESSFUL);
+	@PostMapping(value = "api/quiz/QuestionnaireSubmission")
+	public UserRes QuestionnaireSubmission(@RequestBody UserReq req) {
+		 return service.QuestionnaireSubmission(req);
 	}
-
+	
+	@PostMapping(value = "api/quiz/Submission")
+	public UserRes Submission(@RequestBody UserReq req) {
+		 return service.Submission(req);
+	}
+	
+	@GetMapping(value = "api/quiz/getSubmission")
+	public UserRes getSubmission(@RequestParam int qnId) {
+		return service.getSubmission(qnId);
+		
+	}
+	
+	
 }

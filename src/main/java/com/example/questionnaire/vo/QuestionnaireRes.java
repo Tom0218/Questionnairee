@@ -5,14 +5,27 @@ import java.util.List;
 import com.example.questionnaire.constants.RtnCode;
 import com.example.questionnaire.entity.Questionnaire;
 
-public class QuestionnaireRes {
-	
-	private List<Questionnaire> questionnaireList; 
-	
+public class QuestionnaireRes extends Questionnaire {
+
+	private Questionnaire questionnaire;
+
+	private List<Questionnaire> questionnaireList;
+
 	private RtnCode rtncode;
 
 	public QuestionnaireRes() {
 		super();
+	}
+
+	public QuestionnaireRes(RtnCode rtncode) {
+		super();
+		this.rtncode = rtncode;
+	}
+
+	public QuestionnaireRes(Questionnaire questionnaire, RtnCode rtncode) {
+		super();
+		this.questionnaire = questionnaire;
+		this.rtncode = rtncode;
 	}
 
 	public QuestionnaireRes(List<Questionnaire> questionnaireList, RtnCode rtncode) {
@@ -36,7 +49,5 @@ public class QuestionnaireRes {
 	public void setRtncode(RtnCode rtncode) {
 		this.rtncode = rtncode;
 	}
-	
-	
 
 }
