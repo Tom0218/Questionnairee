@@ -207,13 +207,12 @@ public class QuizServiceImpl implements QuizService {
 
 		return new QuizRes(quizVoList, RtnCode.SUCCESSFUL);
 	}
-	
+
 	@Override
 	public QuestionnaireRes searchQuestionnaire(int qnId) {
 		return null;
-	
+
 	}
-	
 
 	@Cacheable(cacheNames = "searchQuestionnaireList", key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())", unless = "#result.rtncode.code !=200")
 	@CacheEvict(cacheNames = "searchQuestionnaireList", allEntries = true)
@@ -252,10 +251,6 @@ public class QuizServiceImpl implements QuizService {
 				|| StringUtils.hasText(user.getEmail()) || user.getAge() < 0 || // Additional check for age
 				user.getQnId() > 0 || user.getQuId() > 0 || StringUtils.hasText(user.getAnswer())
 				|| user.getDateTime() != null) {
-			System.out.println("name" + user.getName());
-			System.out.println(user.getPhoneNumber());
-			System.out.println(user.getAge());
-			System.out.println(user.getEmail());
 
 			return new QuizRes(RtnCode.SUCCESSFUL);
 		}
@@ -305,10 +300,8 @@ public class QuizServiceImpl implements QuizService {
 		if (List.isEmpty()) {
 			return new UserRes(RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
 		}
-		return new UserRes(RtnCode.SUCCESSFUL,List);
+		return new UserRes(RtnCode.SUCCESSFUL, List);
 	}
-
-	
 
 //	@Cacheable(cacheNames = "searchQuestionList")
 //	@CacheEvict(cacheNames = "searchQuestionList", allEntries = true)
@@ -322,8 +315,7 @@ public class QuizServiceImpl implements QuizService {
 //		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
 //	}
 //	
-	
-	
+
 //	public void upadateQnStatue() {
 //		LocalDate today = LocalDate.now();
 //		int res = qnDao.updateQnStatus(today);

@@ -50,4 +50,14 @@ public class QuestionnaireRes extends Questionnaire {
 		this.rtncode = rtncode;
 	}
 
+	public Questionnaire getQuestionnaire() {
+		return questionnaire;
+	}
+
+	public void setQuestionnaire(Questionnaire questionnaire) {
+		this.questionnaire = questionnaire;
+	}
+	
+	
+
 }

@@ -16,7 +16,6 @@ import com.example.questionnaire.entity.Questionnaire;
 import com.example.questionnaire.entity.User;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
-import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
